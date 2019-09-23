@@ -64,6 +64,7 @@ public class JMSWriter {
     private boolean connected = false;                              // Whether connected to MQ
     private boolean inflight = false;                               // Whether messages in-flight in current transaction
     private long reconnectDelayMillis = RECONNECT_DELAY_MILLIS_MIN; // Delay between repeated reconnect attempts
+    private String applicationIdentity;
 
     private static long RECONNECT_DELAY_MILLIS_MIN = 64l;
     private static long RECONNECT_DELAY_MILLIS_MAX = 8192l;
@@ -95,6 +96,7 @@ public class JMSWriter {
         String persistent = props.get(MQSinkConnector.CONFIG_NAME_MQ_PERSISTENT);
         String sslCipherSuite = props.get(MQSinkConnector.CONFIG_NAME_MQ_SSL_CIPHER_SUITE);
         String sslPeerName = props.get(MQSinkConnector.CONFIG_NAME_MQ_SSL_PEER_NAME);
+        applicationIdentity = props.get(MQSinkConnector.CONFIG_NAME_MQ_APPLICATION_IDENTITY);
 
         int transportType = WMQConstants.WMQ_CM_CLIENT;
         if (connectionMode != null) {
@@ -147,6 +149,8 @@ public class JMSWriter {
             this.password = password;
     
             queue.setMessageBodyStyle(WMQConstants.WMQ_MESSAGE_BODY_MQ);
+            queue.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED, true);
+            queue.setIntProperty(WMQConstants.WMQ_MQMD_MESSAGE_CONTEXT, WMQConstants.WMQ_MDCTX_SET_IDENTITY_CONTEXT);
             if (mbj != null) {
                 if (Boolean.parseBoolean(mbj)) {
                     queue.setMessageBodyStyle(WMQConstants.WMQ_MESSAGE_BODY_JMS);
@@ -224,9 +228,12 @@ public class JMSWriter {
         try {
             Message m = builder.fromSinkRecord(jmsCtxt, r);
             inflight = true;
+            m.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED, true);
+            m.setIntProperty(WMQConstants.WMQ_MQMD_MESSAGE_CONTEXT, WMQConstants.WMQ_MDCTX_SET_IDENTITY_CONTEXT);
+            m.setStringProperty(WMQConstants.JMS_IBM_MQMD_APPLIDENTITYDATA, applicationIdentity);
             jmsProd.send(queue, m);
         }
-        catch (JMSRuntimeException jmse) {
+        catch (JMSException | JMSRuntimeException jmse) {
             log.error("JMS exception {}", jmse);
             throw handleException(jmse);
         }

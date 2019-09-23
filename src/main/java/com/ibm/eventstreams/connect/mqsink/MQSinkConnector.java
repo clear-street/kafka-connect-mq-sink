@@ -107,6 +107,10 @@ public class MQSinkConnector extends SinkConnector {
     public static final String CONFIG_DOCUMENTATION_MQ_REPLY_QUEUE = "The name of the reply-to queue, as a queue name or URI.";
     public static final String CONFIG_DISPLAY_MQ_REPLY_QUEUE = "Reply-to queue";
 
+    public static final String CONFIG_NAME_MQ_APPLICATION_IDENTITY = "mq.application_identity";
+    public static final String CONFIG_DOCUMENTATION_MQ_APPLICATION_IDENTITY = "Application identity to send to MQ";
+    public static final String CONFIG_DISPLAY_MQ_APPLICATION_IDENTITY = "Application Identity";
+
     public static String VERSION = "1.1.0";
 
     private Map<String, String> configProps;
@@ -255,6 +259,10 @@ public class MQSinkConnector extends SinkConnector {
         config.define(CONFIG_NAME_MQ_REPLY_QUEUE, Type.STRING, null, Importance.LOW,
                       CONFIG_DOCUMENTATION_MQ_REPLY_QUEUE, CONFIG_GROUP_MQ, 17, Width.MEDIUM,
                       CONFIG_DISPLAY_MQ_REPLY_QUEUE);
+
+        config.define(CONFIG_NAME_MQ_APPLICATION_IDENTITY, Type.STRING, null, Importance.LOW,
+                      CONFIG_DOCUMENTATION_MQ_APPLICATION_IDENTITY, CONFIG_GROUP_MQ, 18, Width.MEDIUM,
+                      CONFIG_DISPLAY_MQ_APPLICATION_IDENTITY);
 
         return config;
     }
