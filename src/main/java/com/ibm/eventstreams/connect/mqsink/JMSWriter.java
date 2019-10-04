@@ -151,6 +151,7 @@ public class JMSWriter {
             queue.setMessageBodyStyle(WMQConstants.WMQ_MESSAGE_BODY_MQ);
             queue.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED, true);
             queue.setIntProperty(WMQConstants.WMQ_MQMD_MESSAGE_CONTEXT, WMQConstants.WMQ_MDCTX_SET_IDENTITY_CONTEXT);
+            log.info("WMQ_MQMD_WRITE_ENABLED={}, WMQ_MQMD_MESSAGE_CONTEXT={}", queue.getBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED), queue.getIntProperty(WMQConstants.WMQ_MQMD_MESSAGE_CONTEXT));
             if (mbj != null) {
                 if (Boolean.parseBoolean(mbj)) {
                     queue.setMessageBodyStyle(WMQConstants.WMQ_MESSAGE_BODY_JMS);
@@ -221,7 +222,7 @@ public class JMSWriter {
      * @throws ConnectException   Operation failed and connector should stop.
      */
     public void send(SinkRecord r) throws ConnectException, RetriableException {
-        log.trace("[{}] Entry {}.send", Thread.currentThread().getId(), this.getClass().getName());
+        log.info("[{}] Entry {}.send", Thread.currentThread().getId(), this.getClass().getName());
 
         connectInternal();
 
@@ -231,6 +232,7 @@ public class JMSWriter {
             m.setBooleanProperty(WMQConstants.WMQ_MQMD_WRITE_ENABLED, true);
             m.setIntProperty(WMQConstants.WMQ_MQMD_MESSAGE_CONTEXT, WMQConstants.WMQ_MDCTX_SET_IDENTITY_CONTEXT);
             m.setStringProperty(WMQConstants.JMS_IBM_MQMD_APPLIDENTITYDATA, applicationIdentity);
+            log.info("JMS_IBM_MQMD_APPLIDENTITYDATA={}", applicationIdentity);
             jmsProd.send(queue, m);
         }
         catch (JMSException | JMSRuntimeException jmse) {
@@ -238,7 +240,7 @@ public class JMSWriter {
             throw handleException(jmse);
         }
 
-        log.trace("[{}]  Exit {}.send", Thread.currentThread().getId(), this.getClass().getName());
+        log.info("[{}]  Exit {}.send", Thread.currentThread().getId(), this.getClass().getName());
     }
 
 
