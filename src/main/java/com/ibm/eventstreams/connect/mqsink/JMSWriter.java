@@ -97,6 +97,7 @@ public class JMSWriter {
         String sslCipherSuite = props.get(MQSinkConnector.CONFIG_NAME_MQ_SSL_CIPHER_SUITE);
         String sslPeerName = props.get(MQSinkConnector.CONFIG_NAME_MQ_SSL_PEER_NAME);
         applicationIdentity = props.get(MQSinkConnector.CONFIG_NAME_MQ_APPLICATION_IDENTITY);
+        log.info("applicationIdentity={}", applicationIdentity);
 
         int transportType = WMQConstants.WMQ_CM_CLIENT;
         if (connectionMode != null) {
